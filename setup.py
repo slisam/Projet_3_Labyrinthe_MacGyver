@@ -1,197 +1,143 @@
-#generate list of list with the maze file
-def read_file():
-    with open("maze", "r") as file:
+from random import randrange
+# generate list of list with the maze file
+
+class Maze:
+
+    def __init__(self, maze_file):
+        self.maze = self.read_file()
+        self.mg_pos_x = 1
+        self.mg_pos_y = 1
+        self.bag= []
+        self.item_pos = [("S", random_free_pos(self.maze)), ("T", random_free_pos(maze)), ("A", random_free_pos(maze))]
+
+
+    def read_file(self):
         maze = []
-        for line in file:
-            line_maze = []
-            for sprite in line:
-                if sprite != '\n':
-                    line_maze.append(sprite)
-            maze.append(line_maze)
-    return maze
-
-#retourner si la sprite est un sol ou pas pour y placer un objet
-def is_free(maze,pos_y, pos_x) :
-    return maze[pos_y][pos_x] == "0"
+        with open(self.maze_file, "r") as file:
+            for line in file:
+                line_maze = []
+                for sprite in line:
+                    if sprite != '\n':
+                        line_maze.append(sprite)
+                maze.append(line_maze)
+        return maze
 
 
-def is_wall(maze,pos_y,pos_x) :
-    return maze[pos_y][pos_x] == "w"
+    def display_maze(self, self.maze, mg_pos_x, mg_pos_y, item_pos):  # à modifier par 1 seul tuple (posy, posx)
+        for l, line in enumerate(maze):
+            for c, sprite in enumerate(line):
+                if (l, c) == (mg_pos_x, mg_pos_y):
+                    print("M", end="")
+                    continue
+                displayed_object = False
+                for o, pos in item_pos:
+                    if (l, c) == (pos[0], pos[1]):
+                        print(o, end="")
+                        displayed_object = True
+                if displayed_object:
+                    continue
+                if sprite == '0':
+                    print('-', end="")
+                if sprite == 'w':
+                    print('#', end="")
+                if sprite == 'G':
+                    print('G', end="")
+                if sprite == 'X':
+                    print('X', end="")
+            print('')
 
 
-def display_maze(maze, pos_y, pos_x):
-    for l, line in enumerate(maze):
-        for c, sprite in enumerate(line):
-            if (l, c) == (pos_y, pos_x) :
-                print("M", end="")
-                continue
-            if sprite == '0':
-                print('-', end="")
-            if sprite == 'w':
-                print('#', end="")
-            if sprite == 'G':
-                print('G', end="")
-            if sprite == 'S':
-                print('S', end="")
-            if sprite == 'T':
-                print('T', end="")
-            if sprite == 'A':
-                print('A', end="")
+    def is_free(self, maze, gyver.pos_x, gyver.pos_y):
+        if pos_x < 0 or pos_y <0 or pos_x > 14 or pos_y > 14:
+            return False
+        return self.maze[pos_x][pos_y] != "w"
 
-        print('')
+    def random_free_pos(self,maze):
+        while True:
+            x, y = randrange(16), randrange(16)
+            if is_free(maze,x,y):
+                return x,y
 
-def move_pos(pos_y, pos_x, user_move) :
-    if user_move == "z":
-        mg_pos(pos_y - 1,pos_x -1)
-    if user_move == "s":
-        print("Down")
-    if user_move == "d":
-        print("Right")
-    if user_move == "q":
-        print("Left")
+    def is_wall(self, maze, pos_x, pos_y):
+        return maze[pos_x][pos_y] == "w"
 
-maze = read_file()
-mg_pos_y = 1
+
+
+class Macgyver:
+    def __init__(self):
+        self.pos_x = 1
+        self.pos_y = 1
+
+
 mg_pos_x = 1
+mg_pos_y = 1
+class Loot:
+bag = []
+item_pos = [("S", random_free_pos(maze)), ("T", random_free_pos(maze)), ("A", random_free_pos(maze))]
+
+    def display_item(items):
+        items_pos2 = []
+        for item in items:
+            displayed_item = False
+            while not displayed_item:
+                x, y = randrange(16), randrange(16)
+                if is_free(maze, x, y) & (x, y) not in items_pos2:
+                    items_pos2[item] = (x, y)
+                    displayed_item = True
+        return items_pos2
+
+    def item_picked(item_pos, pos_x, pos_y):
+        for i in item_pos:
+            if i[1] == (pos_x,pos_y):
+                return True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 game_on = 1
 while game_on == 1:
-    display_maze(maze, mg_pos_y, mg_pos_x)
+    print(bag)
+    display_maze(maze, mg_pos_x, mg_pos_y, item_pos)
     user_move = input("Choose MacGyver move : Up(z), Down(s), Right(d), Left (q) ")
     if user_move == "z":
-        mg_move_y = mg_pos_y - 1
-        mg_move_x = mg_pos_x
+        if is_free(maze, mg_pos_x -1, mg_pos_y):
+            mg_pos_x = mg_pos_x - 1
     if user_move == "s":
-        mg_move_y = mg_pos_y + 1
-        mg_move_x = mg_pos_x
+        if is_free(maze, mg_pos_x + 1, mg_pos_y):
+            mg_pos_x = mg_pos_x + 1
     if user_move == "d":
-        mg_move_y = mg_pos_y
-        mg_move_x = mg_pos_x + 1
+        if is_free(maze, mg_pos_x, mg_pos_y + 1):
+            mg_pos_y = mg_pos_y + 1
     if user_move == "q":
-        mg_move_y = mg_pos_y
-        mg_move_x = mg_pos_x - 1
+        if is_free(maze, mg_pos_x, mg_pos_y - 1):
+            mg_pos_y = mg_pos_y - 1
     if user_move == "quit":
         game_on = 2
-    if is_free(maze,mg_move_y, mg_move_x) :
-        mg_pos_y , mg_pos_x = mg_move_y, mg_move_x
+    if item_picked(item_pos,mg_pos_x, mg_pos_y):
+        for j, i in enumerate(item_pos):
+            if i[1] == (mg_pos_x, mg_pos_y):
+                bag.append(i[0])
+                del item_pos[j]
+    if maze[mg_pos_x][mg_pos_y] == "X" and len(bag) == 3 :
+            game_on = 2
+    if maze[mg_pos_x][mg_pos_y] == "G" and len(bag) != 3 :
+            game_on = 3
 
+if game_on == 2:
+    print("You win!")
+if game_on == 3:
+    print("You Died!")
 
-# def mg_pos(pos_x, pos_y):
-#     mg_maze_pos = maze[pos_x][pos_y]
-#     return maze[pos_x- 1][pos_y]
-
-
-# print(mg_pos(2,2))
-
-'''
-def mg_pos(pos_y, pos_x):
-    maze[pos_y][pos_x] = "M"
-
-
-
-maze =[
-[8,8,8,7,7,7,7,7,8,7,7,7,7,7,7],
-[8,7,8,8,8,8,8,7,8,7,7,8,7,8,8],
-[8,8,7,7,8,7,8,8,8,7,8,8,8,8,7],
-[7,8,8,7,7,7,7,7,8,8,8,7,7,7,7],
-[7,8,8,7,8,8,8,8,8,7,7,7,8,8,7],
-[7,7,8,7,8,7,7,8,7,7,8,8,8,7,7],
-[8,8,8,7,7,7,8,8,8,8,8,7,7,7,7],
-[8,7,8,8,7,7,7,8,7,8,7,7,8,8,7],
-[8,7,7,8,7,8,8,8,7,8,8,8,8,7,7],
-[7,7,7,8,8,7,7,7,7,8,7,7,7,7,7],
-[7,7,7,8,7,7,8,7,8,8,7,7,8,8,7],
-[7,8,8,8,7,8,8,7,8,7,7,8,8,7,7],
-[8,8,7,7,7,8,7,8,8,8,8,8,7,7,7],
-[7,8,7,7,8,8,7,7,8,7,7,8,7,7,7],
-[7,8,8,8,8,7,7,7,8,8,7,8,8,8,9],
-]
-mg_pos = maze[0][0]
-display_maze = ''
-for sprite in maze :
-    # if sprite == mg_pos:
-    #     display_maze+='M'
-    if sprite == 8:
-        display_maze+='-'
-    if sprite == 7:
-        display_maze+='#'
-    # if sprite == 'G':
-    #     display_maze+='G'
-    print(display_maze)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#####################################
-# import pygame
-
-
-
-    load maze
-with open("maze", "r") as file:
-    maze_level = []
-    display_maze = ''
-    for line in file:
-        line_maze = []
-        for sprite in line:
-            if sprite == 'M':
-                display_maze+='M'
-            if sprite == '0':
-                display_maze+='-'
-            if sprite == 'w':
-                display_maze+='#'
-            if sprite == 'G':
-                display_maze+='G'
-            if sprite == '\n':
-                display_maze +='\n'
-                line_maze.append(sprite)
-        maze_level.append(line_maze)
-    #Main loop
-# def display_maze(maze_level) :
-#
-#     for i in maze_level:
-#         if i != "\n":
-#             print(i)
-# print(display_maze(maze_level))
-# print(maze_level)
-#
-# test = maze_level[0][0]
-# print(test)
-# move = input("Deplacement : Haut(z) Gauche(q) Bas(s) Droite(d)")
-# if move == "z":
-#     print("bas")
-
-# game_on = 1
-#
-# while game_on :
-#     for event in pygame.event.get():
-#         if event.type == KEYDOWN:
-#             if event.key == pygame.K_RIGHT:
-#                 #MG.move('right')
-#                 print("right")
-#             elif event.key == pygame.K_LEFT:
-#                 #MG.move('left')
-#                 print("right")
-#             elif event.key == pygame.K_UP:
-#                 #MG.move('up')
-#                 print("right")
-#             elif event.key == pygame.K_DOWN:
-#                 #MG.move('down')
-#                 print("right")
-#
-# def loot:
-#
-'''
