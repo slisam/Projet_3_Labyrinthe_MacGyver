@@ -1,28 +1,17 @@
 from random import randrange
-import pygame
-from pygame.locals import *
+# import pygame
+# from pygame.locals import *
+
 
 class Game:
 
     def __init__(self, maze_file):
-        """
-               COMMENTAIRE
-           """
         self.maze_file = maze_file
         self.maze = self.read_file()
         self.mg_pos_x = 1
         self.mg_pos_y = 1
         self.bag = []
-        self.item_pos = [("syringe", self.random_free_pos()), ("ether", self.random_free_pos()), ("needle", self.random_free_pos())]
-        pygame.init()
-        self.window = pygame.display.set_mode((450, 450))
-        icon = pygame.image.load('images/MacGyver.png')
-        pygame.display.set_icon(icon)
-        # Titre
-        pygame.display.set_caption("MacGyver maze")
-        self.pic = {}
-        for item in ["background", "macgyver", "guardian", "wall", "needle", "ether", "syringe", "bag"]:
-            self.pic[item] = pygame.image.load("images/{}.png".format(item)).convert()
+        self.item_pos = [("S", self.random_free_pos()), ("T", self.random_free_pos()), ("A", self.random_free_pos())]
 
     def move_to(self, dx, dy):
         if self.is_free(self.mg_pos_x + dx, self.mg_pos_y + dy):
@@ -51,32 +40,29 @@ class Game:
             return False
         return self.maze[pos_x][pos_y] != "w"
 
-    def display_at(self, what, pos):
-        self.window.blit(self.pic[what], pos)
-
     def display_maze(self):
-        self.display_at('background',(0,0))
+        print(self.bag)
         for l, line in enumerate(self.maze):
             for c, sprite in enumerate(line):
                 if (l, c) == (self.mg_pos_x, self.mg_pos_y):
-                    self.display_at('macgyver',  (c*30, l*30))
+                    print("M", end="")
                     continue
                 displayed_object = False
                 for o, pos in self.item_pos:
                     if (l, c) == (pos[0], pos[1]):
-                        self.display_at('macgyver', (c * 30, l * 30))self.window.blit(self.pic[o], (c * 30, l * 30))
+                        print(o, end="")
                         displayed_object = True
                 if displayed_object:
                     continue
+                if sprite == '0':
+                    print('-', end="")
                 if sprite == 'w':
-                    self.window.blit(self.pic["wall"], (c * 30, l * 30))
+                    print('#', end="")
                 if sprite == 'G':
-                    self.window.blit(self.pic["guardian"], (c * 30, l * 30))
+                    print('G', end="")
                 if sprite == 'X':
-                    pass
+                    print('X', end="")
             print('')
-        pygame.time.Clock().tick(30)
-        pygame.display.flip()
 
     def is_wall(self, pos_x, pos_y):
         return self.maze[pos_x][pos_y] == "w"
@@ -124,45 +110,22 @@ class GameLogic:
         game_on = 1
         while game_on == 1:
             self.game.display_maze()
-            dir = self.get_direction()
-            if dir == 0:
-                continue
-            if dir == -1:
-                game_on = 0
-            else:
-                self.game.user_move(dir)
-                if self.game.is_mg_on_exit():
-                    game_on = 2
-                if self.game.is_mg_on_guard():
-                    game_on = 3
-                self.game.item_picked()
+            self.game.user_move(self.get_direction())
+            if self.game.is_mg_on_exit():
+                game_on = 2
+            if self.game.is_mg_on_guard():
+                game_on = 3
+            self.game.item_picked()
         return game_on
 
     @staticmethod
     def get_direction():
-        for event in pygame.event.get():
+        while True:
+            direction = input("Choose MacGyver move : Up(z), Down(s), Right(d), Left (q) ")
+            if direction and direction.lower() in "zqsd":
+                return {"z": 1, "s": 2, "d": 3, "q": 4}[direction.lower()]
 
-            # Si l'utilisateur quitte, on met la variable qui continue le jeu
-            # ET la variable générale à 0 pour fermer la fenêtre
-            if event.type == QUIT:
-                return -1
-            elif event.type == KEYDOWN:
-                # Si l'utilisateur presse Echap ici, on revient seulement au menu
-                if event.key == K_ESCAPE:
-                    return -1
-                elif event.key == K_RIGHT:
-                    return 3
-                elif event.key == K_LEFT:
-                    return 4
-                elif event.key == K_UP:
-                    return 1
-                elif event.key == K_DOWN:
-                    return 2
-            return 0
-
-
-
-
+GameLogic.play_one_game()
 gl = GameLogic()
 game_on = gl.play_one_game()
 if game_on == 2:
