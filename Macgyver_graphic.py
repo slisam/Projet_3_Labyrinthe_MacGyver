@@ -6,8 +6,8 @@ class Game:
 
     def __init__(self, maze_file):
         """
-               COMMENTAIRE
-           """
+        maze object
+        """
         self.maze_file = maze_file
         self.maze = self.read_file()
         self.mg_pos_x = 1
@@ -25,11 +25,17 @@ class Game:
             self.pic[item] = pygame.image.load("images/{}.png".format(item)).convert()
 
     def move_to(self, dx, dy):
+        """
+        move MG if the destination square is free
+        """
         if self.is_free(self.mg_pos_x + dx, self.mg_pos_y + dy):
             self.mg_pos_x += dx
             self.mg_pos_y += dy
 
     def read_file(self):
+        """
+        generate a list of a list with the file "maze"
+        """
         maze = []
         with open(self.maze_file, "r") as file:
             for line in file:
@@ -41,20 +47,32 @@ class Game:
         return maze
 
     def random_free_pos(self):
+        """
+        return a random free square
+        """
         while True:
             x, y = randrange(16), randrange(16)
             if self.is_free(x, y):
                 return x, y
 
     def is_free(self, pos_x, pos_y):
+        """
+        check if the square is free
+        """
         if pos_x < 0 or pos_y < 0 or pos_x > 14 or pos_y > 14:
             return False
         return self.maze[pos_x][pos_y] != "w"
 
     def display_at(self, what, pos):
+        """
+        display a picture of images folder
+        """
         self.window.blit(self.pic[what], pos)
 
     def display_maze(self):
+        """
+        display all maze elements
+        """
         self.display_at('background',(0,0))
         for l, line in enumerate(self.maze):
             for c, sprite in enumerate(line):
@@ -64,7 +82,8 @@ class Game:
                 displayed_object = False
                 for o, pos in self.item_pos:
                     if (l, c) == (pos[0], pos[1]):
-                        self.display_at('macgyver', (c * 30, l * 30))self.window.blit(self.pic[o], (c * 30, l * 30))
+                        self.display_at('macgyver', (c * 30, l * 30))
+                        self.window.blit(self.pic[o], (c * 30, l * 30))
                         displayed_object = True
                 if displayed_object:
                     continue
@@ -78,10 +97,12 @@ class Game:
         pygame.time.Clock().tick(30)
         pygame.display.flip()
 
-    def is_wall(self, pos_x, pos_y):
-        return self.maze[pos_x][pos_y] == "w"
 
     def item_picked(self):
+        """
+
+        :return:
+        """
         for i in self.item_pos:
             if i[1] == (self.mg_pos_x, self.mg_pos_y):
                 for j, k in enumerate(self.item_pos):
