@@ -1,5 +1,6 @@
 import pygame
 import game
+import time
 
 
 class GameLogic:
@@ -54,3 +55,19 @@ class GameLogic:
                 elif event.key == pygame.K_DOWN:
                     return 2
             return 0
+
+    def win(self):
+        """
+        display the winning screen
+        """
+        self.game.display_at("win", (0, 0))
+        pygame.display.flip()
+        time.sleep(5)
+
+    def over(self):
+        """
+        display the looser screen
+        """
+        self.game.display_at("over", (0, 0))
+        pygame.display.flip()
+        time.sleep(5)

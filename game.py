@@ -65,8 +65,7 @@ class Game:
         """
         if pos_x < 1 or pos_y < 1 or pos_x > 14 or pos_y > 14:
             return False
-        if self.maze[pos_x][pos_y] != "w" and self.maze[pos_x][pos_y] != "X" and self.maze[pos_x][pos_y] != "G":
-            return self.maze[pos_x][pos_y]
+        return self.maze[pos_x][pos_y] != "w"
 
     def display_at(self, what, pos):
         """
@@ -157,3 +156,4 @@ class Game:
             self.move_to(0, +1)
         if direction == 4:
             self.move_to(0, -1)
+
